@@ -15,6 +15,6 @@ int main() {
   double m[max_matrix_size * max_matrix_size];
   printf("%ld %d %d\n", sizeof(m), RAND_MAX, rand() % 10);
   int a = 80;
-  printf("\n|%*s|\n", a, "Hello world!");
+  printf("\n|%*s|\n", a, "Hello, world!");
   return 0;
 }
