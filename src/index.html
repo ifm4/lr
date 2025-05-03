@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Popup Menu</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .blurred-content {
+            filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .random-text {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .open-btn {
+            margin: 20px auto;
+            padding: 12px 24px;
+            background: #FFA726;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .open-btn:hover {
+            background: #FB8C00;
+            transform: translateY(-1px);
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 80%;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .popup.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .popup-content {
+            text-align: center;
+        }
+
+        .popup-content ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .popup-content li {
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 5px;
+        }
+
+        .popup-content li:hover {
+            background: #f0f0f0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-wrapper" id="contentWrapper">
+        <div class="random-text">
+            <h1>Welcome to the Page</h1>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+        <button class="open-btn" onclick="openPopup()">Open Menu</button>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>
+    <div class="popup" id="popupMenu">
+        <div class="popup-content">
+            <h2>Menu Options</h2>
+            <ul>
+                <li>Profile Settings</li>
+                <li>Account Details</li>
+                <li>Logout</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Escape key handler
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const popup = document.getElementById('popupMenu');
+                if (popup.classList.contains('active')) {
+                    closePopup();
+                }
+            }
+        });
+
+        function openPopup() {
+            const popup = document.getElementById('popupMenu');
+            const contentWrapper = document.getElementById('contentWrapper');
+            const overlay = document.getElementById('overlay');
+            
+            popup.classList.add('active');
+            contentWrapper.classList.add('blurred-content');
+            overlay.classList.add('active');
+        }
+
+        function closePopup() {
+            const popup = document.getElementById('popupMenu');
+            const contentWrapper = document.getElementById('contentWrapper');
+            const overlay = document.getElementById('overlay');
+            
+            popup.classList.remove('active');
+            contentWrapper.classList.remove('blurred-content');
+            overlay.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
