@@ -1,14 +1,16 @@
+#include <assert.h>
 #include <malloc.h>
-#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 
-long n, dx, d, s0;
-
+int64_t n, dx, d, s0;
 void get_initial_conditions() {
   printf("Enter n, dx, d, s0: ");
   scanf(" %ld, %ld, %ld, %ld", &n, &dx, &d, &s0);
 }
+
+int64_t min(int64_t a, int64_t b) { return a < b ? a : b; }
+int64_t max(int64_t a, int64_t b) { return a > b ? a : b; }
 
 typedef struct table_t {
   int64_t *table;
@@ -33,38 +35,46 @@ void table_print(table_t table, const char *label) {
   }
 }
 
-int64_t table_get(table_t table, size_t f, size_t x_normalized) {
-  return *(table.table + (f - 1) * table.rows + (x_normalized - 1));
+int64_t table_get_value(table_t table, size_t f, size_t x) {
+  x /= dx;
+  return x == 0 ? 0 : *(table.table + (f - 1) * table.rows + (x - 1));
 }
 
-long min(long a, long b) { return a < b ? a : b; }
-
-int64_t f_opt(table_t table, int64_t s, size_t k) {
+int64_t get_opt(table_t table, int64_t s, size_t k) {
   if (s == 0)
     return 0;
   if (k == n)
-    return table_get(table, k, s / dx);
-  int64_t val;
+    return table_get_value(table, k, (size_t)min(s, d));
   int64_t opt = 0;
-  for (int i = 0; i < min(s / dx, d / dx); i++) {
-    val = table_get(table, k, (size_t)i) + f_opt(table, s - i * dx, k + 1);
-    opt = opt < val ? val : opt;
+  int64_t cur;
+  for (int64_t _x = 0; _x <= min(s, d); _x += dx) {
+    cur = table_get_value(table, (size_t)k, (size_t)_x) +
+          get_opt(table, (int64_t)(s - _x), (size_t)(k + 1));
+    opt = max(cur, opt);
   }
-  ++k;
   return opt;
 }
 
 int main() {
   get_initial_conditions();
+  assert(s0 != 0 && d != 0 && dx != 0);
+  assert(s0 % dx == 0 && d % dx == 0);
+
   table_t table;
   table.columns = n;
   table.rows = min(d / dx, s0 / dx);
+
   table.table = (int64_t *)malloc(sizeof(int64_t) * table.rows * table.columns);
-  if (table.table == NULL)
-    return 1;
+  assert(table.table != NULL);
+
   table_fill(table);
   table_print(table, "function's values:");
-  int64_t opt = f_opt(table, s0, 1);
-  printf("opt: %ld\n", opt);
+
+  int64_t result = get_opt(table, s0, 1);
+  printf("f_max: %ld\n", result);
+
   free(table.table);
+  table.table = NULL;
+  assert(table.table == NULL);
+  return 0;
 }
